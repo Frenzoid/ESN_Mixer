@@ -32,7 +32,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_SOCKET_URL=${VITE_SOCKET_URL:-http://esn.frenzoid.dev:5000}
+        - VITE_SOCKET_URL=${VITE_SOCKET_URL:-http://esnb.frenzoid.dev:5000}
     container_name: song-queue-frontend
     restart: unless-stopped
     ports:
