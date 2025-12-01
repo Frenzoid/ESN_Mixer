@@ -10,33 +10,8 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const server = http.createServer(app);
 
-// Get allowed origins - support multiple origins for development
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
-const allowedOrigins = [
-  FRONTEND_URL,
-  'http://localhost:3000',
-  'http://localhost:5173', // Vite default port
-  'http://127.0.0.1:3000',
-  'http://127.0.0.1:5173',
-];
-
 // CORS middleware for Express
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(null, true); // Allow anyway for development - change in production
-    }
-  },
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
-
+app.use(cors());
 app.use(express.json());
 
 // Socket.IO setup with CORS
