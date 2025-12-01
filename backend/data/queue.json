@@ -1,0 +1,15 @@
+{
+  "queue": [
+    {
+      "id": "5e5ad623-5983-4e71-8570-82ce8eb30858",
+      "songTitle": "werwe",
+      "artistName": "rwerw",
+      "requesterName": "Anonymous",
+      "userId": "7de7f7b4-f291-4195-99e7-3e8da63e9a2e",
+      "timestamp": "2025-12-01T21:58:26.316Z"
+    }
+  ],
+  "userRequests": {
+    "7de7f7b4-f291-4195-99e7-3e8da63e9a2e": "5e5ad623-5983-4e71-8570-82ce8eb30858"
+  }
+}

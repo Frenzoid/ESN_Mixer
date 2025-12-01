@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2E3192" />
+  <meta name="description" content="ESN Lugano Song Queue - Request your favorite tracks at our events!" />
+  <title>ESN Lugano | Song Queue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- ESN Favicon - Star icon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 61,40 98,40 68,62 79,97 50,75 21,97 32,62 2,40 39,40' fill='%2300AEEF'/></svg>">
+  <!-- Fallback styles to prevent black screen -->
+  <style>
+    html,
+    body,
+    #root {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 50%, #fdf4ff 100%);
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    #root:empty::before {
+      content: 'Loading ESN Lugano Song Queue...';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #2E3192;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>
+    <div
+      style="padding: 2rem; text-align: center; background: #f0f9ff; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+      <div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <h1 style="color: #2E3192;">JavaScript Required</h1>
+        <p style="color: #64748b;">Please enable JavaScript to use the ESN Lugano Song Queue.</p>
+      </div>
+    </div>
+  </noscript>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>
