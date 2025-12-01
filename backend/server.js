@@ -17,9 +17,8 @@ app.use(express.json());
 // Socket.IO setup with CORS
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST'],
-    credentials: true
+    origin: '*',
+    methods: ['GET', 'POST']
   },
   transports: ['websocket', 'polling'],
   allowEIO3: true // Allow Engine.IO v3 clients
