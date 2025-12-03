@@ -248,7 +248,7 @@ function App() {
           <Alert variant="danger" className="notification-alert">
             {connectionError}
             <br />
-            <small>Make sure the backend server is running on {SOCKET_URL}</small>
+            <small>Error onnecting to: {SOCKET_URL}</small>
           </Alert>
         )}
 

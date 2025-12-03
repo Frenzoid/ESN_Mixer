@@ -15,7 +15,7 @@ const Header = ({ isConnected, queueLength }) => {
           </div>
           <div className="title-section">
             <h1 className="app-title">ESN Lugano Song Queue</h1>
-            <p className="app-subtitle">Request your favorite tracks 🎶</p>
+            <p className="app-subtitle">Request your favorite tracks 🎶 - Made by <a className='text-warning' href="https://frenzoid.dev/"> Frenzoid</a> with ❤️</p>
           </div>
         </div>
 
