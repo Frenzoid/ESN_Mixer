@@ -15,7 +15,8 @@ const Header = ({ isConnected, queueLength }) => {
           </div>
           <div className="title-section">
             <h1 className="app-title">ESN Lugano Song Queue</h1>
-            <p className="app-subtitle">Request your favorite tracks 🎶 - Made by <a className='text-warning' href="https://frenzoid.dev/"> Frenzoid</a> with ❤️</p>
+            <p className="app-subtitle">Request your favorite tracks 🎶 - Made by <a className='text-warning' href="https://frenzoid.dev/"> Frenzoid</a> with ❤️ for <a className='text-warning' href="https://chat.whatsapp.com/HRUUfqgjdjn24IUrI23hwd
+" >ESN Lugano 🦢.</a></p>
           </div>
         </div>
 
