@@ -1,35 +1,6 @@
-# 🎵 Song Request Queue
+# 🎵 ESN Karaoke Night Song Request Queue Webapp
 
-A real-time song request queue application built with Node.js, Express, Socket.IO, and React.
-
-## Project Structure
-
-After downloading, organize the files like this:
-
-```
-song-queue-app/
-├── backend/
-│   ├── server.js              ← server.js
-│   ├── package.json           ← backend-package.json (rename to package.json)
-│   └── .env                   ← backend.env (rename to .env)
-│
-└── frontend/
-    ├── public/
-    │   └── index.html         ← index.html
-    ├── src/
-    │   ├── App.js             ← App.js
-    │   ├── index.js           ← index.js
-    │   ├── components/
-    │   │   ├── Header.js      ← Header.js
-    │   │   ├── SongRequestForm.js  ← SongRequestForm.js
-    │   │   ├── QueueList.js   ← QueueList.js
-    │   │   ├── AdminPanel.js  ← AdminPanel.js
-    │   │   └── NowPlaying.js  ← NowPlaying.js
-    │   └── styles/
-    │       └── App.css        ← App.css
-    ├── package.json           ← frontend-package.json (rename to package.json)
-    └── .env                   ← frontend.env (rename to .env)
-```
+A real-time song request queue application built with Node.js, Express, Socket.IO, and React for the ESN Karaoke Nights!
 
 ## Quick Start
 
@@ -62,7 +33,7 @@ npm start
   - Mark as played
   - Remove songs
   - Clear entire queue
-- **Persistent storage** to JSON file
+- **Persistent storage** to SQLite File.
 - **Beautiful dark synthwave UI**
 
 ## Environment Variables
