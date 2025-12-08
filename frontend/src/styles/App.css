@@ -1,6 +1,7 @@
 /* ==========================================
    SONG QUEUE APP - ESN Lugano Theme
    Erasmus Student Network Branding
+   With Dark/Light Mode Support
    ========================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -19,11 +20,33 @@
   --esn-magenta-light: #f54daf;
   --esn-magenta-dark: #c9006f;
 
+  /* Status Colors */
+  --color-success: var(--esn-green);
+  --color-warning: var(--esn-orange);
+  --color-danger: #ef4444;
+  --color-info: var(--esn-cyan);
+
+  /* Gradients */
+  --gradient-esn: linear-gradient(135deg, var(--esn-cyan) 0%, var(--esn-magenta) 100%);
+  --gradient-esn-full: linear-gradient(135deg, var(--esn-cyan) 0%, var(--esn-dark-blue) 25%, var(--esn-magenta) 50%, var(--esn-orange) 75%, var(--esn-green) 100%);
+  --gradient-header: linear-gradient(135deg, var(--esn-dark-blue) 0%, var(--esn-cyan) 100%);
+
+  /* Border Radius */
+  --border-radius: 16px;
+  --border-radius-sm: 10px;
+}
+
+/* ==========================================
+   Light Theme (Default)
+   ========================================== */
+
+[data-theme="light"] {
   /* Background Colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-card: #ffffff;
   --bg-input: #f1f5f9;
+  --bg-wrapper: linear-gradient(180deg, #f0f9ff 0%, #ffffff 50%, #fdf4ff 100%);
 
   /* Text Colors */
   --text-primary: #1e293b;
@@ -31,11 +54,8 @@
   --text-muted: #94a3b8;
   --text-on-color: #ffffff;
 
-  /* Status Colors */
-  --color-success: var(--esn-green);
-  --color-warning: var(--esn-orange);
-  --color-danger: #ef4444;
-  --color-info: var(--esn-cyan);
+  /* Border */
+  --border-color: #e2e8f0;
 
   /* Shadows & Effects */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -44,15 +64,40 @@
   --shadow-cyan: 0 4px 20px rgba(0, 174, 239, 0.3);
   --shadow-magenta: 0 4px 20px rgba(236, 0, 140, 0.3);
 
-  /* Gradients */
-  --gradient-esn: linear-gradient(135deg, var(--esn-cyan) 0%, var(--esn-magenta) 100%);
-  --gradient-esn-full: linear-gradient(135deg, var(--esn-cyan) 0%, var(--esn-dark-blue) 25%, var(--esn-magenta) 50%, var(--esn-orange) 75%, var(--esn-green) 100%);
-  --gradient-header: linear-gradient(135deg, var(--esn-dark-blue) 0%, var(--esn-cyan) 100%);
+  /* Orb opacity */
+  --orb-opacity: 0.3;
+}
+
+/* ==========================================
+   Dark Theme
+   ========================================== */
+
+[data-theme="dark"] {
+  /* Background Colors */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --bg-input: #334155;
+  --bg-wrapper: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+
+  /* Text Colors */
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #a8b5c7;
+  --text-on-color: #ffffff;
 
   /* Border */
-  --border-color: #e2e8f0;
-  --border-radius: 16px;
-  --border-radius-sm: 10px;
+  --border-color: #334155;
+
+  /* Shadows & Effects */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+  --shadow-cyan: 0 4px 20px rgba(0, 174, 239, 0.4);
+  --shadow-magenta: 0 4px 20px rgba(236, 0, 140, 0.4);
+
+  /* Orb opacity */
+  --orb-opacity: 0.15;
 }
 
 * {
@@ -66,6 +111,55 @@ body {
   background: var(--bg-secondary);
   color: var(--text-primary);
   min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Bootstrap Text Color Overrides for Theme Support */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] small.text-muted,
+[data-theme="dark"] span.text-muted,
+[data-theme="dark"] p.text-muted,
+[data-theme="dark"] div.text-muted {
+  color: #a8b5c7 !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.text-dark {
+  color: var(--text-primary) !important;
+}
+
+/* Form text helper */
+.form-text {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .form-text {
+  color: #a8b5c7 !important;
+}
+
+/* Modal backdrop and content for dark mode */
+[data-theme="dark"] .modal-content {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .modal-header {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .modal-footer {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 /* ==========================================
@@ -75,7 +169,8 @@ body {
 .app-wrapper {
   min-height: 100vh;
   position: relative;
-  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 50%, #fdf4ff 100%);
+  background: var(--bg-wrapper);
+  transition: background 0.3s ease;
 }
 
 .background-effects {
@@ -93,8 +188,9 @@ body {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
-  opacity: 0.3;
+  opacity: var(--orb-opacity);
   animation: float 25s ease-in-out infinite;
+  transition: opacity 0.3s ease;
 }
 
 .orb-1 {
@@ -124,20 +220,15 @@ body {
 }
 
 @keyframes float {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: translate(0, 0) scale(1);
   }
-
   25% {
     transform: translate(20px, -25px) scale(1.03);
   }
-
   50% {
     transform: translate(-15px, 15px) scale(0.97);
   }
-
   75% {
     transform: translate(10px, 30px) scale(1.02);
   }
@@ -217,7 +308,6 @@ body {
   from {
     transform: rotate(0deg);
   }
-
   to {
     transform: rotate(360deg);
   }
@@ -251,25 +341,78 @@ body {
   gap: 0.75rem;
 }
 
-.status-badge {
+/* Theme Toggle Button */
+.theme-toggle-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.theme-toggle-button:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle-button svg {
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle-button:hover svg {
+  transform: rotate(15deg);
+}
+
+/* Header Badges - Base Styles */
+.header-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.5rem 1rem !important;
   font-size: 0.85rem !important;
   font-weight: 600;
   border-radius: 30px !important;
-  background: rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   color: white !important;
 }
 
+.header-badge svg {
+  flex-shrink: 0;
+}
+
+.badge-value {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.badge-label {
+  opacity: 0.9;
+  font-size: 0.85rem;
+}
+
+.header-badge {
+  background: rgba(45, 199, 255, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: currentColor;
+  flex-shrink: 0;
 }
 
 .status-dot.connected {
@@ -278,40 +421,26 @@ body {
   animation: pulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
+.status-dot.offline {
+  background: var(--color-danger);
+  box-shadow: none;
+}
 
-  0%,
-  100% {
+@keyframes pulse {
+  0%, 100% {
     opacity: 1;
     transform: scale(1);
   }
-
   50% {
     opacity: 0.7;
     transform: scale(1.2);
   }
 }
 
+/* Queue Count Badge */
 .queue-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem !important;
-  font-size: 0.85rem !important;
   background: rgba(255, 255, 255, 0.2) !important;
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  border-radius: 30px !important;
-  color: white !important;
-}
-
-.queue-count {
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.queue-label {
-  opacity: 0.9;
 }
 
 /* ==========================================
@@ -405,7 +534,7 @@ body {
 .custom-input-group:focus-within {
   border-color: var(--esn-cyan);
   box-shadow: 0 0 0 4px rgba(0, 174, 239, 0.15);
-  background: white;
+  background: var(--bg-card);
 }
 
 .custom-input-group .input-group-text {
@@ -576,7 +705,7 @@ body {
 }
 
 .queue-item:hover {
-  background: white;
+  background: var(--bg-card);
   border-color: var(--esn-cyan);
   box-shadow: var(--shadow-sm);
 }
@@ -590,6 +719,72 @@ body {
 .queue-item.user-song {
   background: linear-gradient(135deg, rgba(122, 193, 67, 0.08), rgba(0, 174, 239, 0.08));
   border-color: var(--esn-green);
+}
+
+/* Drag and Drop Styles */
+.drag-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, rgba(0, 174, 239, 0.08), rgba(236, 0, 140, 0.08));
+  border: 1px dashed var(--esn-cyan);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.drag-hint svg {
+  color: var(--esn-cyan);
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 44px;
+  cursor: grab;
+  color: var(--text-muted);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.drag-handle:hover {
+  color: var(--esn-cyan);
+  background: rgba(0, 174, 239, 0.1);
+}
+
+.drag-handle:active,
+.drag-handle.active {
+  cursor: grabbing;
+  color: var(--esn-cyan);
+  background: rgba(0, 174, 239, 0.15);
+}
+
+.queue-item.dragging {
+  opacity: 0.5;
+  border-style: dashed;
+}
+
+.queue-item.dragging-overlay {
+  background: var(--bg-card);
+  border: 2px solid var(--esn-cyan);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(0, 174, 239, 0.3);
+  transform: scale(1.02);
+}
+
+/* Touch-friendly drag handle on mobile */
+@media (pointer: coarse) {
+  .drag-handle {
+    width: 40px;
+    height: 50px;
+  }
 }
 
 .queue-position {
@@ -619,12 +814,9 @@ body {
 }
 
 @keyframes pulse-glow {
-
-  0%,
-  100% {
+  0%, 100% {
     box-shadow: 0 0 15px rgba(0, 174, 239, 0.4);
   }
-
   50% {
     box-shadow: 0 0 25px rgba(0, 174, 239, 0.7);
   }
@@ -656,6 +848,10 @@ body {
   font-size: 0.9rem;
   color: var(--esn-dark-blue);
   font-weight: 500;
+}
+
+[data-theme="dark"] .song-artist {
+  color: var(--esn-cyan-light);
 }
 
 .song-meta {
@@ -713,8 +909,23 @@ body {
   display: none;
 }
 
+.ban-button span {
+  display: none;
+}
+
+.delete-button span {
+  display: none;
+}
+
 @media (min-width: 768px) {
   .remove-button span {
+    display: inline;
+  }
+    .ban-button span {
+    display: inline;
+  }
+
+  .delete-button span {
     display: inline;
   }
 }
@@ -732,23 +943,6 @@ body {
 
 .played-button:hover {
   background: var(--esn-green) !important;
-  color: white !important;
-}
-
-.reorder-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.reorder-button {
-  padding: 0.25rem 0.5rem !important;
-  border-color: var(--esn-cyan) !important;
-  color: var(--esn-cyan) !important;
-}
-
-.reorder-button:hover:not(:disabled) {
-  background: var(--esn-cyan) !important;
   color: white !important;
 }
 
@@ -899,6 +1093,10 @@ body {
   margin-bottom: 0.5rem;
 }
 
+[data-theme="dark"] .admin-badge {
+  color: var(--esn-cyan-light);
+}
+
 .admin-hint {
   font-size: 0.85rem;
   color: var(--text-secondary);
@@ -964,7 +1162,6 @@ body {
     transform: translateY(-100%);
     opacity: 0;
   }
-
   to {
     transform: translateY(0);
     opacity: 1;
@@ -1034,12 +1231,9 @@ body {
 }
 
 @keyframes equalize {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: scaleY(1);
   }
-
   50% {
     transform: scaleY(0.4);
   }
@@ -1098,7 +1292,6 @@ body {
     transform: translateX(100%);
     opacity: 0;
   }
-
   to {
     transform: translateX(0);
     opacity: 1;
@@ -1149,6 +1342,7 @@ body {
 
   .status-section {
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .queue-item {
@@ -1158,9 +1352,6 @@ body {
   .song-actions {
     width: 100%;
     justify-content: flex-end;
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--border-color);
   }
 }
 
@@ -1195,6 +1386,27 @@ body {
     right: 1rem;
     min-width: auto;
     max-width: none;
+  }
+
+  .status-section {
+    gap: 0.5rem;
+  }
+
+  .theme-toggle-button {
+    width: 38px;
+    height: 38px;
+  }
+
+  .header-badge {
+    padding: 0.4rem 0.75rem !important;
+  }
+
+  .badge-value {
+    font-size: 0.85rem;
+  }
+
+  .badge-label {
+    font-size: 0.75rem;
   }
 }
 
@@ -1333,7 +1545,7 @@ body {
 }
 
 /* ================================
-   Banned Message in Form (Light Theme)
+   Banned Message in Form (Theme Aware)
    ================================ */
 
 .request-card .banned-message {
@@ -1373,6 +1585,28 @@ body {
   font-size: 0.85rem;
 }
 
+/* Ban reason in form */
+.ban-reason {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.ban-reason-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ban-reason-text {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
 /* ================================
    Ban Button in Queue
    ================================ */
@@ -1389,7 +1623,7 @@ body {
 }
 
 /* ================================
-   Ban Modal (Light Theme)
+   Ban Modal (Theme Aware)
    ================================ */
 
 .ban-modal .modal-content {
@@ -1422,6 +1656,10 @@ body {
   filter: none;
 }
 
+[data-theme="dark"] .ban-modal .btn-close {
+  filter: invert(1);
+}
+
 .ban-target-info {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -1433,6 +1671,11 @@ body {
 .ban-target-info strong {
   color: var(--text-primary);
   font-family: 'Space Grotesk', sans-serif;
+}
+
+.ban-target-info .text-muted,
+.ban-target-info small {
+  color: var(--text-muted) !important;
 }
 
 .ban-modal .form-label {
@@ -1450,7 +1693,7 @@ body {
 }
 
 .ban-modal .form-control:focus {
-  background: white;
+  background: var(--bg-card);
   border-color: var(--esn-cyan);
   color: var(--text-primary);
   box-shadow: 0 0 0 4px rgba(0, 174, 239, 0.15);
@@ -1496,7 +1739,7 @@ body {
 }
 
 /* ================================
-   Admin Panel Tabs (Light Theme)
+   Admin Panel Tabs (Theme Aware)
    ================================ */
 
 .admin-tabs {
@@ -1528,6 +1771,10 @@ body {
   border-bottom-color: var(--bg-card);
 }
 
+[data-theme="dark"] .admin-tabs .nav-link.active {
+  color: var(--esn-cyan-light);
+}
+
 .tab-title {
   display: flex;
   align-items: center;
@@ -1540,7 +1787,7 @@ body {
 }
 
 /* ================================
-   Blocked Users Section (Light Theme)
+   Blocked Users Section (Theme Aware)
    ================================ */
 
 .blocked-users-section {
@@ -1669,7 +1916,7 @@ body {
 }
 
 /* ================================
-   Admin Buttons (Light Theme)
+   Admin Buttons (Theme Aware)
    ================================ */
 
 .admin-buttons {

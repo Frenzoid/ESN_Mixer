@@ -1,9 +1,213 @@
 import React, { useState } from 'react';
 import { Card, Button, Badge, Modal, Form } from 'react-bootstrap';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
+
+// Sortable Queue Item Component
+const SortableQueueItem = ({ 
+  song, 
+  index, 
+  isUserSong, 
+  isAdmin, 
+  queueLength,
+  onRemove, 
+  onAdminRemove, 
+  onBanClick,
+  formatTime 
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: song.id,
+    disabled: !isAdmin 
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`queue-item ${isUserSong ? 'user-song' : ''} ${index === 0 ? 'next-up' : ''} ${isDragging ? 'dragging' : ''}`}
+    >
+      {/* Drag Handle - Only visible for admin */}
+      {isAdmin && (
+        <div className="drag-handle" {...attributes} {...listeners}>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="9" cy="5" r="1" fill="currentColor" />
+            <circle cx="9" cy="12" r="1" fill="currentColor" />
+            <circle cx="9" cy="19" r="1" fill="currentColor" />
+            <circle cx="15" cy="5" r="1" fill="currentColor" />
+            <circle cx="15" cy="12" r="1" fill="currentColor" />
+            <circle cx="15" cy="19" r="1" fill="currentColor" />
+          </svg>
+        </div>
+      )}
+
+      <div className="queue-position">
+        {index === 0 ? (
+          <div className="next-badge">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <polygon points="5,3 19,12 5,21" />
+            </svg>
+          </div>
+        ) : (
+          <span className="position-number">{index + 1}</span>
+        )}
+      </div>
+
+      <div className="song-info">
+        <div className="song-main">
+          <h3 className="song-title">{song.songTitle}</h3>
+          <span className="song-artist">{song.artistName}</span>
+        </div>
+        <div className="song-meta">
+          <span className="requester">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            {song.requesterName}
+          </span>
+          <span className="timestamp">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12,6 12,12 16,14" />
+            </svg>
+            {formatTime(song.timestamp)}
+          </span>
+        </div>
+      </div>
+
+
+      <div className="song-actions">
+        {isUserSong && (
+          <Button
+            variant="outline-danger"
+            size="sm"
+            className="action-button remove-button"
+            onClick={() => onRemove(song.id)}
+            title="Remove your request"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+            <span>Remove</span>
+          </Button>
+        )}
+
+        {(isAdmin && !isUserSong) && (
+          <div className="admin-actions">
+            <Button
+              variant="outline-warning"
+              size="sm"
+              className="action-button ban-button"
+              onClick={() => onBanClick(song)}
+              title="Ban this user"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+              </svg>
+            <span>Ban User</span>
+            </Button>
+
+            <Button
+              variant="outline-danger"
+              size="sm"
+              className="action-button delete-button"
+              onClick={() => onAdminRemove(song.id)}
+              title="Delete from queue"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="3,6 5,6 21,6" />
+                <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6M8,6V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6" />
+              </svg>
+            <span>Remove</span>
+            </Button>
+          </div>
+        )}
+
+        {isUserSong && (
+          <Badge bg="info" className="your-song-badge">Your Request</Badge>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Drag Overlay Item (shown while dragging)
+const DragOverlayItem = ({ song, formatTime }) => {
+  return (
+    <div className="queue-item dragging-overlay">
+      <div className="drag-handle active">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="9" cy="5" r="1" fill="currentColor" />
+          <circle cx="9" cy="12" r="1" fill="currentColor" />
+          <circle cx="9" cy="19" r="1" fill="currentColor" />
+          <circle cx="15" cy="5" r="1" fill="currentColor" />
+          <circle cx="15" cy="12" r="1" fill="currentColor" />
+          <circle cx="15" cy="19" r="1" fill="currentColor" />
+        </svg>
+      </div>
+      <div className="queue-position">
+        <span className="position-number">•</span>
+      </div>
+      <div className="song-info">
+        <div className="song-main">
+          <h3 className="song-title">{song.songTitle}</h3>
+          <span className="song-artist">{song.artistName}</span>
+        </div>
+        <div className="song-meta">
+          <span className="requester">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            {song.requesterName}
+          </span>
+          <span className="timestamp">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12,6 12,12 16,14" />
+            </svg>
+            {formatTime(song.timestamp)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const QueueList = ({
   queue,
-  userId,
+  oduserId,
   isAdmin,
   onRemove,
   onAdminRemove,
@@ -13,13 +217,26 @@ const QueueList = ({
   const [showBanModal, setShowBanModal] = useState(false);
   const [banTarget, setBanTarget] = useState(null);
   const [banReason, setBanReason] = useState('');
+  const [activeId, setActiveId] = useState(null);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px movement before starting drag
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const isUserSong = (song) => song.userId === userId;
+  const isUserSong = (song) => song.oduserId === oduserId;
 
   const handleBanClick = (song) => {
     setBanTarget(song);
@@ -29,7 +246,7 @@ const QueueList = ({
 
   const handleBanConfirm = () => {
     if (banTarget && onBanUser) {
-      onBanUser(banTarget.userId, banReason || 'Inappropriate behavior');
+      onBanUser(banTarget.oduserId, banReason || 'Inappropriate behavior');
     }
     setShowBanModal(false);
     setBanTarget(null);
@@ -41,6 +258,34 @@ const QueueList = ({
     setBanTarget(null);
     setBanReason('');
   };
+
+  // Drag handlers
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = queue.findIndex((song) => song.id === active.id);
+    const newIndex = queue.findIndex((song) => song.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1 && onAdminReorder) {
+      // Call the reorder function with the new order
+      onAdminReorder(active.id, oldIndex, newIndex);
+    }
+  };
+
+  const handleDragCancel = () => {
+    setActiveId(null);
+  };
+
+  const activeSong = activeId ? queue.find((song) => song.id === activeId) : null;
 
   return (
     <>
@@ -58,6 +303,20 @@ const QueueList = ({
             </Badge>
           </div>
 
+          {isAdmin && queue.length > 1 && (
+            <div className="drag-hint">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="5,9 2,12 5,15" />
+                <polyline points="9,5 12,2 15,5" />
+                <polyline points="15,19 12,22 9,19" />
+                <polyline points="19,9 22,12 19,15" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <line x1="12" y1="2" x2="12" y2="22" />
+              </svg>
+              <span>Drag songs to reorder</span>
+            </div>
+          )}
+
           {queue.length === 0 ? (
             <div className="empty-queue">
               <div className="empty-icon">
@@ -69,127 +328,39 @@ const QueueList = ({
               <span className="empty-hint">Be the first to request a song!</span>
             </div>
           ) : (
-            <div className="queue-list">
-              {queue.map((song, index) => (
-                <div
-                  key={song.id}
-                  className={`queue-item ${isUserSong(song) ? 'user-song' : ''} ${index === 0 ? 'next-up' : ''}`}
-                >
-                  <div className="queue-position">
-                    {index === 0 ? (
-                      <div className="next-badge">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                          <polygon points="5,3 19,12 5,21" />
-                        </svg>
-                      </div>
-                    ) : (
-                      <span className="position-number">{index + 1}</span>
-                    )}
-                  </div>
-
-                  <div className="song-info">
-                    <div className="song-main">
-                      <h3 className="song-title">{song.songTitle}</h3>
-                      <span className="song-artist">{song.artistName}</span>
-                    </div>
-                    <div className="song-meta">
-                      <span className="requester">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
-                        {song.requesterName}
-                      </span>
-                      <span className="timestamp">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10" />
-                          <polyline points="12,6 12,12 16,14" />
-                        </svg>
-                        {formatTime(song.timestamp)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="song-actions">
-                    {isUserSong(song) && (
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        className="action-button remove-button"
-                        onClick={() => onRemove(song.id)}
-                        title="Remove your request"
-                      >
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M18 6L6 18M6 6l12 12" />
-                        </svg>
-                        <span>Remove</span>
-                      </Button>
-                    )}
-
-                    {isAdmin && (
-                      <div className="admin-actions">
-                        <div className="reorder-buttons">
-                          <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            className="action-button reorder-button"
-                            onClick={() => onAdminReorder(song.id, 'up')}
-                            disabled={index === 0}
-                            title="Move up"
-                          >
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="18,15 12,9 6,15" />
-                            </svg>
-                          </Button>
-                          <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            className="action-button reorder-button"
-                            onClick={() => onAdminReorder(song.id, 'down')}
-                            disabled={index === queue.length - 1}
-                            title="Move down"
-                          >
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="6,9 12,15 18,9" />
-                            </svg>
-                          </Button>
-                        </div>
-
-                        <Button
-                          variant="outline-warning"
-                          size="sm"
-                          className="action-button ban-button"
-                          onClick={() => handleBanClick(song)}
-                          title="Ban this user"
-                        >
-                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                          </svg>
-                        </Button>
-
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          className="action-button delete-button"
-                          onClick={() => onAdminRemove(song.id)}
-                          title="Delete from queue"
-                        >
-                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3,6 5,6 21,6" />
-                            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6M8,6V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6" />
-                          </svg>
-                        </Button>
-                      </div>
-                    )}
-
-                    {isUserSong(song) && (
-                      <Badge bg="info" className="your-song-badge">Your Request</Badge>
-                    )}
-                  </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+              modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+            >
+              <SortableContext items={queue.map(s => s.id)} strategy={verticalListSortingStrategy}>
+                <div className="queue-list">
+                  {queue.map((song, index) => (
+                    <SortableQueueItem
+                      key={song.id}
+                      song={song}
+                      index={index}
+                      isUserSong={isUserSong(song)}
+                      isAdmin={isAdmin}
+                      queueLength={queue.length}
+                      onRemove={onRemove}
+                      onAdminRemove={onAdminRemove}
+                      onBanClick={handleBanClick}
+                      formatTime={formatTime}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+
+              <DragOverlay>
+                {activeSong ? (
+                  <DragOverlayItem song={activeSong} formatTime={formatTime} />
+                ) : null}
+              </DragOverlay>
+            </DndContext>
           )}
         </Card.Body>
       </Card>
@@ -224,6 +395,7 @@ const QueueList = ({
                   placeholder="e.g., Inappropriate song requests"
                   value={banReason}
                   onChange={(e) => setBanReason(e.target.value)}
+                  maxLength={500}
                 />
               </Form.Group>
               <p className="mt-3 text-danger">

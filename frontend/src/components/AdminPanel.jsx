@@ -20,11 +20,13 @@ const AdminPanel = ({
     if (!password.trim()) return;
 
     setIsLoading(true);
-    const success = await onLogin(password);
-    setIsLoading(false);
-
-    if (success) {
-      setPassword('');
+    try {
+      const success = await onLogin(password);
+      if (success) {
+        setPassword('');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,6 +52,11 @@ const AdminPanel = ({
     });
   };
 
+  const truncateId = (id) => {
+    if (!id) return 'Unknown';
+    return id.length > 8 ? `${id.substring(0, 8)}...` : id;
+  };
+
   return (
     <Card className="admin-card">
       <Card.Body>
@@ -58,6 +65,8 @@ const AdminPanel = ({
           onClick={() => setIsOpen(!isOpen)}
           role="button"
           aria-expanded={isOpen}
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && setIsOpen(!isOpen)}
         >
           <div className="admin-header-left">
             <div className={`card-icon admin-icon ${isAdmin ? 'active' : ''}`}>
@@ -96,6 +105,7 @@ const AdminPanel = ({
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="custom-input"
+                      autoComplete="current-password"
                     />
                   </InputGroup>
                 </Form.Group>
@@ -235,7 +245,7 @@ const AdminPanel = ({
                                 </div>
                                 <div className="blocked-user-details">
                                   <span className="blocked-user-id">
-                                    User ID: {user.oduserId?.substring(0, 8)}...
+                                    User ID: {truncateId(user.oduserId)}
                                   </span>
                                   <span className="blocked-user-reason">
                                     {user.reason || 'No reason provided'}
