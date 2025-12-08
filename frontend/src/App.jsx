@@ -10,6 +10,7 @@ import AdminPanel from './components/AdminPanel';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/App.css';
+import './styles/Admin.css';
 
 // Vite uses import.meta.env instead of process.env
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
@@ -41,6 +42,11 @@ function App() {
   const [notification, setNotification] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
+  
+  // Ban state
+  const [isBanned, setIsBanned] = useState(false);
+  const [banReason, setBanReason] = useState('');
+  const [blockedUsers, setBlockedUsers] = useState([]);
 
   // Ref to track current userRequestId for use in socket callbacks
   const userRequestIdRef = useRef(userRequestId);
@@ -97,8 +103,6 @@ function App() {
         console.log('Queue updated:', updatedQueue?.length, 'items');
         setQueue(updatedQueue || []);
 
-        // Check if user's song is still in the queue
-        // If not, clear their userRequestId so they can request again
         const currentRequestId = userRequestIdRef.current;
         if (currentRequestId && updatedQueue) {
           const userSongStillInQueue = updatedQueue.some(song => song.id === currentRequestId);
@@ -110,6 +114,10 @@ function App() {
       });
 
       newSocket.on('error', (errorData) => {
+        if (errorData?.blocked) {
+          setIsBanned(true);
+          setBanReason(errorData.reason || 'Inappropriate behavior');
+        }
         setNotification({ message: errorData?.message || 'An error occurred', type: 'danger' });
       });
 
@@ -135,9 +143,61 @@ function App() {
 
       newSocket.on('admin:cleared', (data) => {
         if (data?.success) {
-          // Queue was cleared, so user's song is definitely gone
           setUserRequestId(null);
           setNotification({ message: 'Queue has been cleared.', type: 'warning' });
+        }
+      });
+
+      // Ban-related events
+      newSocket.on('blocked:update', (users) => {
+        setBlockedUsers(users || []);
+      });
+
+      newSocket.on('user:banned', (data) => {
+        // Check if this user got banned
+        const currentUserId = getStoredUserId();
+        if (data.oduserId === currentUserId) {
+          setIsBanned(true);
+          setBanReason(data.reason || 'Inappropriate behavior');
+          setUserRequestId(null);
+        }
+      });
+
+      newSocket.on('user:unbanned', (data) => {
+        const currentUserId = getStoredUserId();
+        if (data.oduserId === currentUserId) {
+          setIsBanned(false);
+          setBanReason('');
+        }
+      });
+
+      newSocket.on('user:allUnbanned', () => {
+        setIsBanned(false);
+        setBanReason('');
+      });
+
+      newSocket.on('admin:banned', (data) => {
+        if (data?.success) {
+          setNotification({ message: 'User has been banned.', type: 'warning' });
+        }
+      });
+
+      newSocket.on('admin:unbanned', (data) => {
+        if (data?.success) {
+          setNotification({ message: 'User has been unbanned.', type: 'success' });
+        }
+      });
+
+      newSocket.on('admin:unbannedAll', (data) => {
+        if (data?.success) {
+          setNotification({ message: 'All users have been unbanned.', type: 'success' });
+        }
+      });
+
+      newSocket.on('admin:eventReset', (data) => {
+        if (data?.success) {
+          setUserRequestId(null);
+          setNotification({ message: 'Event reset: Queue cleared and all users unbanned.', type: 'success' });
         }
       });
 
@@ -151,7 +211,7 @@ function App() {
     }
   }, []);
 
-  // Check for existing request when connected
+  // Check for existing request and ban status when connected
   useEffect(() => {
     const socket = socketRef.current;
     if (socket && isConnected && userId) {
@@ -159,12 +219,29 @@ function App() {
         if (response?.hasRequest) {
           setUserRequestId(response.requestId);
         } else {
-          // Server says user has no request, make sure we're in sync
           setUserRequestId(null);
+        }
+        
+        // Check ban status
+        if (response?.blocked) {
+          setIsBanned(true);
+          setBanReason(response.blocked.reason || 'Inappropriate behavior');
         }
       });
     }
   }, [isConnected, userId]);
+
+  // Fetch blocked users when admin logs in
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (socket && isAdmin && adminPassword) {
+      socket.emit('admin:getBlocked', { password: adminPassword }, (response) => {
+        if (response?.success) {
+          setBlockedUsers(response.blockedUsers || []);
+        }
+      });
+    }
+  }, [isAdmin, adminPassword]);
 
   const handleAddSong = useCallback((songData) => {
     const socket = socketRef.current;
@@ -201,33 +278,55 @@ function App() {
     }
   }, [adminPassword]);
 
-  const handleAdminLogin = useCallback(async (password) => {
-    try {
-      const response = await fetch(`${SOCKET_URL}/api/verify-admin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
-      });
-      const data = await response.json();
-      if (data.success) {
-        setIsAdmin(true);
-        setAdminPassword(password);
-        setNotification({ message: 'Admin mode activated!', type: 'success' });
-        return true;
-      } else {
-        setNotification({ message: 'Invalid admin password', type: 'danger' });
-        return false;
-      }
-    } catch (err) {
-      console.error('Admin login error:', err);
-      setNotification({ message: 'Failed to verify password', type: 'danger' });
-      return false;
+  // Ban management callbacks
+  const handleBanUser = useCallback((oduserId, reason) => {
+    const socket = socketRef.current;
+    if (socket && adminPassword) {
+      socket.emit('admin:ban', { oduserId, reason, password: adminPassword });
     }
-  }, []);
+  }, [adminPassword]);
+
+  const handleUnbanUser = useCallback((oduserId) => {
+    const socket = socketRef.current;
+    if (socket && adminPassword) {
+      socket.emit('admin:unban', { oduserId, password: adminPassword });
+    }
+  }, [adminPassword]);
+
+  const handleUnbanAll = useCallback(() => {
+    const socket = socketRef.current;
+    if (socket && adminPassword) {
+      socket.emit('admin:unbanAll', { password: adminPassword });
+    }
+  }, [adminPassword]);
+
+  const handleAdminLogin = useCallback(async (password) => {
+    return new Promise((resolve) => {
+      const socket = socketRef.current;
+      if (!socket || !isConnected) {
+        setNotification({ message: 'Not connected to server', type: 'danger' });
+        resolve(false);
+        return;
+      }
+
+      socket.emit('admin:login', { password }, (response) => {
+        if (response?.success) {
+          setIsAdmin(true);
+          setAdminPassword(password);
+          setNotification({ message: 'Admin mode activated!', type: 'success' });
+          resolve(true);
+        } else {
+          setNotification({ message: response?.message || 'Invalid admin password', type: 'danger' });
+          resolve(false);
+        }
+      });
+    });
+  }, [isConnected]);
 
   const handleAdminLogout = useCallback(() => {
     setIsAdmin(false);
     setAdminPassword('');
+    setBlockedUsers([]);
     setNotification({ message: 'Admin mode deactivated', type: 'info' });
   }, []);
 
@@ -248,7 +347,7 @@ function App() {
           <Alert variant="danger" className="notification-alert">
             {connectionError}
             <br />
-            <small>Error onnecting to: {SOCKET_URL}</small>
+            <small>Error connecting to: {SOCKET_URL}</small>
           </Alert>
         )}
 
@@ -268,12 +367,17 @@ function App() {
             <SongRequestForm
               onSubmit={handleAddSong}
               hasActiveRequest={hasActiveRequest}
+              isBanned={isBanned}
+              banReason={banReason}
             />
             <AdminPanel
               isAdmin={isAdmin}
               onLogin={handleAdminLogin}
               onLogout={handleAdminLogout}
               onClearQueue={handleAdminClear}
+              onUnbanAll={handleUnbanAll}
+              blockedUsers={blockedUsers}
+              onUnbanUser={handleUnbanUser}
             />
           </Col>
           <Col lg={8}>
@@ -284,6 +388,7 @@ function App() {
               onRemove={handleRemoveSong}
               onAdminRemove={handleAdminRemove}
               onAdminReorder={handleAdminReorder}
+              onBanUser={handleBanUser}
             />
           </Col>
         </Row>

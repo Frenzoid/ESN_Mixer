@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Form, Button, InputGroup } from 'react-bootstrap';
 
-const SongRequestForm = ({ onSubmit, hasActiveRequest }) => {
+const SongRequestForm = ({ onSubmit, hasActiveRequest, isBanned, banReason }) => {
   const [songTitle, setSongTitle] = useState('');
   const [artistName, setArtistName] = useState('');
   const [requesterName, setRequesterName] = useState('');
@@ -10,7 +10,7 @@ const SongRequestForm = ({ onSubmit, hasActiveRequest }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!songTitle.trim() || !artistName.trim()) {
+    if (!songTitle.trim() || !artistName.trim() || isBanned) {
       return;
     }
 
@@ -43,7 +43,24 @@ const SongRequestForm = ({ onSubmit, hasActiveRequest }) => {
           <h2 className="card-title-custom">Request a Song</h2>
         </div>
 
-        {hasActiveRequest ? (
+        {isBanned ? (
+          <div className="banned-message">
+            <div className="banned-icon-small">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+              </svg>
+            </div>
+            <p>You have been blocked from requesting songs</p>
+            {banReason && (
+              <div className="ban-reason">
+                <span className="ban-reason-label">Reason: </span>
+                <span className="ban-reason-text">{banReason}</span>
+              </div>
+            )}
+            <span className="banned-hint-small">Please speak with the event organizers or the DJ if you believe this is a mistake.</span>
+          </div>
+        ) : hasActiveRequest ? (
           <div className="already-requested">
             <div className="already-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

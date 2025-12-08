@@ -1197,3 +1197,581 @@ body {
     max-width: none;
   }
 }
+
+
+/* ================================
+   BAN-RELATED STYLES - ESN Theme
+   ================================ */
+
+/* Banned Overlay - keeping dark for dramatic effect */
+.banned-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.banned-content {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 2px solid var(--color-danger);
+  border-radius: var(--border-radius);
+  padding: 2.5rem;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(239, 68, 68, 0.3);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.banned-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: rgba(239, 68, 68, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-ban 2s infinite;
+}
+
+@keyframes pulse-ban {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+}
+
+.banned-icon svg {
+  width: 45px;
+  height: 45px;
+  color: var(--color-danger);
+}
+
+.banned-title {
+  color: var(--color-danger);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.banned-overlay .banned-message {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0;
+  background: none;
+}
+
+.banned-reason-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--border-radius-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.reason-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.reason-text {
+  color: #fff;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.banned-hint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+.banned-decoration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.decoration-line {
+  height: 1px;
+  width: 40px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.decoration-text {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* ================================
+   Banned Message in Form (Light Theme)
+   ================================ */
+
+.request-card .banned-message {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(236, 0, 140, 0.08));
+  border: 2px dashed var(--color-danger);
+  border-radius: var(--border-radius-sm);
+}
+
+.banned-icon-small {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, var(--color-danger), var(--esn-magenta));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banned-icon-small svg {
+  width: 30px;
+  height: 30px;
+  color: white;
+}
+
+.request-card .banned-message p {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-danger);
+  margin: 0 0 0.5rem 0;
+}
+
+.banned-hint-small {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* ================================
+   Ban Button in Queue
+   ================================ */
+
+.ban-button {
+  border-color: var(--esn-orange) !important;
+  color: var(--esn-orange) !important;
+}
+
+.ban-button:hover {
+  background: var(--esn-orange) !important;
+  border-color: var(--esn-orange) !important;
+  color: white !important;
+}
+
+/* ================================
+   Ban Modal (Light Theme)
+   ================================ */
+
+.ban-modal .modal-content {
+  background: var(--bg-card);
+  border: 2px solid var(--color-danger);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.ban-modal .modal-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.25rem 1.5rem;
+}
+
+.ban-modal .modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-danger);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+}
+
+.ban-modal .modal-body {
+  color: var(--text-primary);
+  padding: 1.5rem;
+}
+
+.ban-modal .btn-close {
+  filter: none;
+}
+
+.ban-target-info {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 1rem;
+  margin-top: 0.75rem;
+}
+
+.ban-target-info strong {
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.ban-modal .form-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.ban-modal .form-control {
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: var(--border-radius-sm);
+  padding: 0.75rem 1rem;
+}
+
+.ban-modal .form-control:focus {
+  background: white;
+  border-color: var(--esn-cyan);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 4px rgba(0, 174, 239, 0.15);
+}
+
+.ban-modal .form-control::placeholder {
+  color: var(--text-muted);
+}
+
+.ban-modal .modal-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 1.5rem;
+  gap: 0.75rem;
+}
+
+.ban-modal .btn-secondary {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--border-radius-sm);
+}
+
+.ban-modal .btn-secondary:hover {
+  background: var(--border-color);
+  border-color: var(--border-color);
+}
+
+.ban-modal .btn-danger {
+  background: var(--color-danger);
+  border: none;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ban-modal .btn-danger:hover {
+  background: #dc2626;
+}
+
+/* ================================
+   Admin Panel Tabs (Light Theme)
+   ================================ */
+
+.admin-tabs {
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.admin-tabs .nav-link {
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+  margin-bottom: -2px;
+}
+
+.admin-tabs .nav-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.admin-tabs .nav-link.active {
+  color: var(--esn-dark-blue);
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-bottom-color: var(--bg-card);
+}
+
+.tab-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab-title .badge {
+  font-size: 0.7rem !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
+/* ================================
+   Blocked Users Section (Light Theme)
+   ================================ */
+
+.blocked-users-section {
+  margin-top: 0.5rem;
+}
+
+.no-blocked-users {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-sm);
+}
+
+.no-blocked-icon {
+  margin-bottom: 1rem;
+}
+
+.no-blocked-icon svg {
+  color: var(--text-muted);
+  width: 50px;
+  height: 50px;
+}
+
+.no-blocked-users p {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.no-blocked-hint {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.blocked-users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.blocked-user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(236, 0, 140, 0.05));
+  border: 2px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--border-radius-sm);
+  padding: 0.875rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.blocked-user-item:hover {
+  border-color: var(--color-danger);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(236, 0, 140, 0.08));
+}
+
+.blocked-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.blocked-user-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--color-danger), var(--esn-magenta));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.blocked-user-icon svg {
+  color: white;
+  width: 20px;
+  height: 20px;
+}
+
+.blocked-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.blocked-user-id {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', monospace;
+  font-weight: 600;
+}
+
+.blocked-user-reason {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.blocked-user-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.unban-button {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  border-color: var(--esn-green) !important;
+  color: var(--esn-green) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.unban-button:hover {
+  background: var(--esn-green) !important;
+  color: white !important;
+}
+
+/* ================================
+   Admin Buttons (Light Theme)
+   ================================ */
+
+.admin-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.admin-buttons .btn {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  border-radius: var(--border-radius-sm) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+}
+
+.clear-queue-button {
+  border: 2px solid var(--color-danger) !important;
+  color: var(--color-danger) !important;
+  background: transparent !important;
+}
+
+.clear-queue-button:hover {
+  background: var(--color-danger) !important;
+  color: white !important;
+}
+
+.unban-all-button {
+  border: 2px solid var(--esn-green) !important;
+  color: var(--esn-green) !important;
+  background: transparent !important;
+}
+
+.unban-all-button:hover:not(:disabled) {
+  background: var(--esn-green) !important;
+  color: white !important;
+}
+
+.unban-all-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.logout-button {
+  border: 2px solid var(--text-muted) !important;
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+}
+
+.logout-button:hover {
+  background: var(--text-muted) !important;
+  color: white !important;
+}
+
+/* ================================
+   Responsive Adjustments
+   ================================ */
+
+@media (max-width: 575px) {
+  .banned-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .banned-icon {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .banned-icon svg {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .banned-title {
+    font-size: 1.4rem;
+  }
+  
+  .admin-buttons {
+    flex-direction: column;
+  }
+  
+  .admin-buttons .btn {
+    min-width: 100%;
+  }
+  
+  .blocked-user-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .unban-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
