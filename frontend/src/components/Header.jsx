@@ -8,7 +8,7 @@ const Header = ({ isConnected, queueLength, theme, onToggleTheme, onlineUsers })
         <div className="logo-section">
           <div className="esn-logo-container">
             <img
-              src="https://eebe.upc.edu/en/incoming/incoming-documents/esn-logo-star.png/@@images/image.png"
+              src="https://www.esn.pl/sites/default/files/news/images/esnstar_digital_full_colour_0.png"
               alt="ESN Star Logo"
               className="esn-star-logo"
             />

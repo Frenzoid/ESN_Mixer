@@ -28,7 +28,9 @@ const SongRequestForm = ({ onSubmit, hasActiveRequest, isBanned, banReason }) =>
       newErrors.artistName = `Artist name must be less than ${MAX_ARTIST_NAME_LENGTH} characters`;
     }
     
-    if (requesterName.trim().length > MAX_REQUESTER_NAME_LENGTH) {
+    if (!requesterName.trim()) {
+      newErrors.requesterName = 'Your name is required';
+    } else if (requesterName.trim().length > MAX_REQUESTER_NAME_LENGTH) {
       newErrors.requesterName = `Name must be less than ${MAX_REQUESTER_NAME_LENGTH} characters`;
     }
     
@@ -48,7 +50,7 @@ const SongRequestForm = ({ onSubmit, hasActiveRequest, isBanned, banReason }) =>
     onSubmit({
       songTitle: songTitle.trim(),
       artistName: artistName.trim(),
-      requesterName: requesterName.trim() || 'Anonymous'
+      requesterName: requesterName.trim()
     });
 
     // Reset form
@@ -181,7 +183,7 @@ const SongRequestForm = ({ onSubmit, hasActiveRequest, isBanned, banReason }) =>
             </Form.Group>
 
             <Form.Group className="mb-1">
-              <Form.Label className="form-label-custom">Your Name (optional)</Form.Label>
+              <Form.Label className="form-label-custom">Your Name *</Form.Label>
               <InputGroup className={`custom-input-group ${errors.requesterName ? 'is-invalid' : ''}`}>
                 <InputGroup.Text>
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
@@ -190,12 +192,13 @@ const SongRequestForm = ({ onSubmit, hasActiveRequest, isBanned, banReason }) =>
                 </InputGroup.Text>
                 <Form.Control
                   type="text"
-                  placeholder="Your name (shows as Anonymous if empty)"
+                  placeholder="Your name"
                   value={requesterName}
                   onChange={handleRequesterNameChange}
                   maxLength={MAX_REQUESTER_NAME_LENGTH}
                   className="custom-input"
                   isInvalid={!!errors.requesterName}
+                  required
                 />
               </InputGroup>
               {errors.requesterName && (
@@ -206,7 +209,7 @@ const SongRequestForm = ({ onSubmit, hasActiveRequest, isBanned, banReason }) =>
             <Button
               type="submit"
               className="submit-button"
-              disabled={isSubmitting || !songTitle.trim() || !artistName.trim()}
+              disabled={isSubmitting || !songTitle.trim() || !artistName.trim() || !requesterName.trim()}
             >
               {isSubmitting ? (
                 <>
